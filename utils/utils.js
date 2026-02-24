@@ -47,6 +47,15 @@ async function formateTicketData(rows, created_by = null, assigned_to = null) {
     return formateData;
 }
 
+async function formateCommentData(rows) {
+    var ans = [];
+    for await (const v of rows) {
+        const us = await getUserById(v.user_id);
+        ans.push({ id: v.id, comment: v.comment, user: us, created_at: v.created_at });
+    }
+    return ans;
+}
+
 function getStatusId(status) {
     if (status == "OPEN") {
         return 1;
@@ -60,4 +69,4 @@ function getStatusId(status) {
 }
 
 const INCOMPLETE_REQUEST = { message: "Input Incompleted" };
-module.exports = { formateUserData, formateTicketData, INCOMPLETE_REQUEST, getUserById, getStatusId };
+module.exports = { formateUserData, formateTicketData, INCOMPLETE_REQUEST, getUserById, getStatusId, formateCommentData };

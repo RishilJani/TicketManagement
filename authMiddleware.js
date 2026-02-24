@@ -11,8 +11,6 @@ function authMiddleware(req, res, next) {
         if (err)
             return res.status(401).json({ message: "Invalid or Expired Token" });
 
-        console.log("user = ", user);
-
         req.user = user;
         next();
     })
@@ -23,7 +21,6 @@ function authorizeRole(...roles) {
         if (!roles.includes(req.user.role)) {
             return res.status(403).json({ message: "Forbidden" });
         }
-        console.log("role matched !!! ");
         next();
     }
 }

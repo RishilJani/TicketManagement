@@ -29,13 +29,11 @@ router.post("/", async (req, res) => {
             res.status(400).json({ message: "Bad Request" });
             return;
         }
-        // const hasedPassword = bcryptjs.hashSync(password, Number(process.env.SALT));
-        const hasedPassword = password;
+        const hasedPassword = bcryptjs.hashSync(password, Number(process.env.SALT));
         const role_id = getRoleId(role);
 
         const {rows} = await db.query(`INSERT into users (name , email, password, role_id, created_at) VALUES ($1,$2,$3,$4,$5) RETURNING *`, [name, email, hasedPassword, role_id, new Date()]);
 
-        console.log("rows  = ", rows);
         const formmatedData = formateUserData(rows);
         res.status(201).json(formmatedData);
     } catch (err) {
