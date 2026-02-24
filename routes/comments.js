@@ -1,6 +1,6 @@
 const express = require("express");
 const db = require("../db_pool");
-const {  INCOMPLETE_REQUEST, formateCommentData } = require("../utils/utils");
+const { formateCommentData } = require("../utils/utils");
 const router = express.Router();
 
 // To Delete A comment

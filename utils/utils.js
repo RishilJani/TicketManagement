@@ -1,20 +1,5 @@
 const db = require("../db_pool");
-
-function formateUserData(rows) {
-    return rows.map((v) => {
-        return {
-            id: v.id,
-            name: v.name,
-            email: v.email,
-            role: {
-                id: v.role_id,
-                name: v.role
-            },
-            created_at: v.created_at
-        };
-    });
-}
-
+// to get a user by given id
 async function getUserById(id = null) {
     if (id == null) return null;
     try {
@@ -31,6 +16,23 @@ async function getUserById(id = null) {
     }
 }
 
+// to formate the input user Data
+function formateUserData(rows) {
+    return rows.map((v) => {
+        return {
+            id: v.id,
+            name: v.name,
+            email: v.email,
+            role: {
+                id: v.role_id,
+                name: v.role
+            },
+            created_at: v.created_at
+        };
+    });
+}
+
+// to formate the input ticket data
 async function formateTicketData(rows, created_by = null, assigned_to = null) {
     var formateData = [];
     for await (const v of rows) {
@@ -47,6 +49,7 @@ async function formateTicketData(rows, created_by = null, assigned_to = null) {
     return formateData;
 }
 
+// to formate the input ticket comment data
 async function formateCommentData(rows) {
     var ans = [];
     for await (const v of rows) {
@@ -56,6 +59,7 @@ async function formateCommentData(rows) {
     return ans;
 }
 
+// to convert status in to number to compare
 function getStatusId(status) {
     if (status == "OPEN") {
         return 1;
@@ -68,5 +72,4 @@ function getStatusId(status) {
     }
 }
 
-const INCOMPLETE_REQUEST = { message: "Input Incompleted" };
-module.exports = { formateUserData, formateTicketData, INCOMPLETE_REQUEST, getUserById, getStatusId, formateCommentData };
+module.exports = { formateUserData, formateTicketData, getUserById, getStatusId, formateCommentData };
