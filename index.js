@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require("cors");
-const { authMiddleware, authorizeRole } = require("./authMiddleware");
+const { authMiddleware, authorizeRole } = require("./utils/middlewares");
 
 const app = express();
 app.use(cors({

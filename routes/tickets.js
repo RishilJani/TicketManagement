@@ -1,6 +1,6 @@
 const express = require("express");
 const db = require("../db_pool");
-const { authorizeRole } = require("../authMiddleware");
+const { authorizeRole } = require("../utils/middlewares");
 const { formateTicketData, getUserById, getStatusId, formateCommentData } = require("../utils/utils");
 const router = express.Router();
 
