@@ -37,7 +37,7 @@ router.post("/", async (req, res) => {
 
         console.log("rows  = ", rows);
         const formmatedData = formateUserData(rows);
-        res.status(200).json(formmatedData);
+        res.status(201).json(formmatedData);
     } catch (err) {
         console.log('err = ', err);
         res.status(500).json({ message: err.message });

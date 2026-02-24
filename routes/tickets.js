@@ -43,8 +43,9 @@ router.post("/", authorizeRole("USER", "MANAGER"), async (req, res) => {
                 INSERT INTO tickets (title, description, priority ,status , created_by, created_at) 
                 VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`, [title, description, priority, "OPEN", curUser.id, new Date()]);
 
-        const formateData = formateTicketData(rows, curUser)[0];
-        res.status(200).json(formateData);
+        const formateData = await formateTicketData(rows, curUser)[0];
+        console.log("formateData = " , formateData);
+        res.status(201).json(formateData);
     } catch (err) {
         console.log('err = ', err);
         res.status(500).json({ message: err.message });
@@ -85,39 +86,85 @@ router.patch("/:id/assign", authorizeRole("MANAGER", "SUPPORT"), async (req, res
 
 // Update Ticket Status
 router.patch("/:id/status", authorizeRole("MANAGER", "SUPPORT"), async (req, res) => {
+    const client = await db.connect();
     try {
         const ticketId = req.params.id;
         const { status } = req.body;
+        const curUser = req.user;
+
         if (!ticketId || !status) {
             res.status(400).json(INCOMPLETE_REQUEST);
             return;
         }
-        var { rows } = (await db.query(`SELECT id,title,status FROM tickets WHERE id = $1`, [ticketId]));
+        var { rows } = (await client.query(`SELECT id,title,status FROM tickets WHERE id = $1`, [ticketId]));
         if (!rows || rows == []) {
             res.status(404).json({ message: "Ticket Not Found" });
             return;
         }
+        const old_status = rows[0].status;
 
-        if (getStatusId(status) <= getStatusId(rows[0].status)) {
+        if (getStatusId(status) <= getStatusId(old_status)) {
             res.status(400).json({ message: "Invalid Status" });
             return;
         }
 
-        const resultRows = (await db.query(`
+        await client.query("BEGIN;");
+
+        const resultRows = (await client.query(`
             UPDATE tickets
             SET status = $1
             WHERE id = $2
             RETURNING *    
         `, [status, ticketId])).rows;
         
+
+        await client.query(`
+            INSERT INTO ticket_status_logs (ticket_id , old_status, new_status , changed_by, changed_at)
+            VALUES ($1,$2,$3,$4,$5)
+        `, [ticketId, old_status, status, curUser.id , new Date()]);
+
+
         const formateData = await formateTicketData(resultRows)[0];
         console.log("formateData = ", formateData);
 
+        await client.query("COMMIT;");
         res.status(200).json(formateData);
     } catch (err) {
+        await client.query("ROLLBACK;");
         console.log('err = ', err);
         res.status(500).json({ message: err.message });
+    }finally{
+        client.release();
     }
 });
 
+router.delete("/:id", authorizeRole("MANAGER"), async (req,res) => {
+    const client = await db.connect();
+    try {
+        await client.query("BEGIN;");
+        const id = req.params.id;
+
+        await client.query("DELETE FROM ticket_comments WHERE ticket_id = $1",[id]);
+        console.log("Comments Deleted....");
+        
+        await client.query("DELETE FROM ticket_status_logs WHERE ticket_id = $1", [id]);
+        console.log("Status Logs Deleted....");
+        
+        await client.query("DELETE FROM tickets WHERE id = $1", [id]);
+        console.log("Ticket Deleted....");
+        
+        await client.query("COMMIT;");
+        res.status(204);
+    } catch(err) {
+        console.log('err = ' , err);
+        await client.query("ROLLBACK;");
+        res.status(500).json({message : err.message});
+    }finally{
+        client.release();
+    }
+});
+
+router.get("/temp", (req,res)=>{
+    res.status(204).json({message : "Found"});
+});
 module.exports = router;
