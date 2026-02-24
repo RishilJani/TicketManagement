@@ -16,7 +16,7 @@ function formateUserData(rows) {
 }
 
 async function getUserById(id = null) {
-    if(id == null) return null;
+    if (id == null) return null;
     try {
         const { rows } = await db.query(`
             SELECT u.id, u.name AS name, u.email , u.created_at, u.role_id, r.name AS role 
@@ -31,19 +31,33 @@ async function getUserById(id = null) {
     }
 }
 
-function formateTicketData(rows, { created_by = null, assigned_to = null }) {
-
-    return rows.map(async (v) => {
+async function formateTicketData(rows, created_by = null, assigned_to = null) {
+    var formateData = [];
+    for await (const v of rows) {
+        const ans = { ...v, created_by: created_by, assigned_to: assigned_to }
         if (created_by == null) {
-            created_by = await getUserById(v.created_by);
+            ans.created_by = await getUserById(v.created_by);
         }
         if (assigned_to == null) {
-            assigned_to = await getUserById(v.created_by);
+            ans.assigned_to = await getUserById(v.created_by);
         }
+        console.log(ans);
+        formateData.push(ans);
+    }
+    return formateData;
+}
 
-        return { ...v, created_by: created_by, assigned_to: assigned_to };
-    });
+function getStatusId(status) {
+    if (status == "OPEN") {
+        return 1;
+    } else if (status == "IN_PROGRESS") {
+        return 2;
+    } else if (status == "RESOLVED") {
+        return 3;
+    } else if (status == "CLOSED") {
+        return 4;
+    }
 }
 
 const INCOMPLETE_REQUEST = { message: "Input Incompleted" };
-module.exports = { formateUserData, formateTicketData, INCOMPLETE_REQUEST, getUserById };
+module.exports = { formateUserData, formateTicketData, INCOMPLETE_REQUEST, getUserById, getStatusId };
