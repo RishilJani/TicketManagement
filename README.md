@@ -6,11 +6,12 @@ A RESTful ticket management API built with Node.js, Express, and Supabase. It su
 
 ## Features
 
-- Create, read, update, and delete tickets
-- Manage and track task status
-- Role based access using JWT
-- RESTful API for easy integration
-- Lightweight and easy to set up
+- 🎫 Create, view, update, and delete tickets
+- 💬 Add and manage comments on tickets
+-🔐 Role-based access control (RBAC) — different permissions per user role
+- 🪙 JWT-based authentication for secure API access
+- 🔑 Password hashing with bcrypt
+- 🗄️ Supabase as the database management system
 
 ---
 
@@ -38,6 +39,20 @@ npm start
 ```
 
 The server will run at `http://localhost:3000` by default.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Runtime** | Node.js |
+| **Framework** | Express.js |
+| **Database** | Supabase (PostgreSQL) |
+| **Authentication** | JWT (JSON Web Tokens) |
+| **Password Security** | bcrypt |
+| **Access Control** | Role-Based Access Control (RBAC) |
+
 
 ---
 
