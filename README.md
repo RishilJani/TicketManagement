@@ -1,6 +1,6 @@
 # Ticket Management
 
-A simple and efficient ticket management system built with Node.js and Express.
+A RESTful ticket management API built with Node.js, Express, and Supabase. It supports full ticket lifecycle management, comment threads, and role-based access control secured with JWT.
 
 ---
 
@@ -47,9 +47,29 @@ The server will run at `http://localhost:3000` by default.
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/tickets` | Get all tickets |
-| GET | `/api/tickets/:id` | Get a ticket by ID |
-| POST | `/api/tickets` | Create a new ticket |
-| PUT | `/api/tickets/:id` | Update a ticket |
-| DELETE | `/api/tickets/:id` | Delete a ticket |
+| GET , POST, PUT, DELETE| `/tickets/` | CRUD of Tickets |
+| GET , POST, PUT, DELETE| `/comments/` | CRUD of Comments |
+
+
+---
+
+## File Structure
+
+```
+└── 📁TicketManagement
+    └── 📁routes
+        ├── comments.js
+        ├── login.js
+        ├── tickets.js
+        ├── users.js
+    └── 📁utils
+        ├── middlewares.js
+        ├── utils.js
+    ├── .env
+    ├── .gitignore
+    ├── db_pool.js
+    ├── index.js
+    ├── package-lock.json
+    └── package.json
+```
 
